@@ -1,0 +1,43 @@
+#!/bin/bash -e
+
+myname=scripts/$(basename $0)
+mydir=$(cd $(dirname $0);pwd)
+source $mydir/../includes/misc.sh
+command=bunzip2
+
+filename=${1-}
+[[ "" = "$filename" ]] && ErrorExit "No filename given" 3
+
+defaultextract=false
+extensions=(.bz2 .bz .tbz2 .tbz)
+for ext in "${extensions[@]}" ; do	
+     [[ ${filename} == *$ext ]] && {
+     	defaultextract=true
+	break
+     }
+done
+
+[[ $defaultextract ==  true ]] && {
+	$command -f $filename
+	exit $?
+}
+
+outname=${filename}.out
+
+[[ -f $outname ]] && {
+	rm -f $outname
+	[[ $? != 0 ]] && ErrorExit "Cannot remove file $outname (tmp file of $command)" 4
+}
+
+$command -f $filename
+status=$?
+[[ $status != 0 ]] && ErrorExit "error during $command" $status
+
+[[ ! -f $outname  ]] && ErrorExit "tmp file $outname was not created" 6
+
+mv $outname $filename 
+status=$?
+[[ $status != 0 ]] && ErrorExit "could restore $outname to $filename" $status
+
+exit 0
+

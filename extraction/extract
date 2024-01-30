@@ -1,0 +1,58 @@
+#!/bin/bash
+
+myname=$(basename $0)
+mydir=$(cd $(dirname $0);pwd)
+
+includefiles=(misc.sh  compressHandler.sh)
+
+for inc in "${includefiles[@]}" ; do
+	echo "Loading $inc ..."
+	source $mydir/include/$inc
+done
+
+ErrorExit() {
+	message="$1"
+	exitcode=${2-1}
+	[[  "$exitcode" -eq "$exitcode" ]] 2>/dev/null  || {
+		echo "${myname}: function  ErrorExit bad exit code passed ($exitcode) defaulting to 1" 1>&2
+		exitcode=1
+	}
+	echo "${myname}: ${message}" 1>&2
+	exit  "$exitcode"
+	
+}
+show_help() {
+	echo  "Syntax: ${myname} [-h] [-v] [-r] file [file ...]" 1>&2
+	echo " -v - verbose echo each file decompressed and warn for each file that was not decompressed" 1>&2
+	echo " -r - recursive - will traverse contents of folders recursively, performing unpack on each" 1>&2
+	echo " -h - help will print this message"
+}
+
+while getopts "hrv" opt  ; do
+	case "$opt" in
+		h)
+			show_help
+			exit 0
+		;;
+		v) 
+			verbose=1
+		;;
+		r) 
+			recursive=1
+		;;
+	esac
+done
+
+shift $((OPTIND-1))
+
+[[ "$@" = "" ]] && ErrorExit "No files were passed for extraction - use ${myname} -h to see how to use this command" 2
+
+fileList=($@)
+
+
+
+
+for f in "${fileList[@]}" ;do
+	command=$(getDecompressCommand $f)
+	echo $f:$command
+done
