@@ -2,7 +2,7 @@
 
 myname=scripts/$(basename $0)
 mydir=$(cd $(dirname $0);pwd)
-command=uncompress.real`
+command=uncompress.real
 
 source $mydir/../include/misc.sh
 

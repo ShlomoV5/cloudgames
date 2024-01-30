@@ -2,7 +2,7 @@
 
 myname=scripts/$(basename $0)
 mydir=$(cd $(dirname $0);pwd)
-source $mydir/../includes/misc.sh
+source $mydir/../include/misc.sh
 command=bunzip2
 
 filename=${1-}
@@ -29,7 +29,7 @@ outname=${filename}.out
 	[[ $? != 0 ]] && ErrorExit "Cannot remove file $outname (tmp file of $command)" 4
 }
 
-$command -f $filename
+$command -f $filename 2>/dev/null
 status=$?
 [[ $status != 0 ]] && ErrorExit "error during $command" $status
 

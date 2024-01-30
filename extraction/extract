@@ -3,6 +3,9 @@
 myname=$(basename $0)
 mydir=$(cd $(dirname $0);pwd)
 
+export verbose=0
+export recursive=0
+
 includefiles=(misc.sh  compressHandler.sh)
 
 for inc in "${includefiles[@]}" ; do
@@ -51,8 +54,10 @@ fileList=($@)
 
 
 
-
 for f in "${fileList[@]}" ;do
-	command=$(getDecompressCommand $f)
-	echo $f:$command
+	[[ -d $f ]] && traverseDir $f || proccessFile $f
 done
+
+[[ $recursive -eq 1 ]] && processDirList
+
+printTotals

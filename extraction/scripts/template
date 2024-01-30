@@ -1,19 +1,44 @@
-#!/bin/bash 
+#!/bin/bash
+#
+# note we only support compressed files not a list of files we will use $command -l $filename to check line 4 and 6
+# example output of the list command
+# Archive:  /tmp/mm2
+#   Length      Date    Time    Name
+# ---------  ---------- -----   ----
+#      1997  2023-06-26 06:23   -
+# ---------                     -------
+#      1997                     1 file
+#
 
 myname=scripts/$(basename $0)
 mydir=$(cd $(dirname $0);pwd)
+command=unzip
 
 source $mydir/../include/misc.sh
-command=gunzip
+
+checkfile() {
+	local filename=$1
+	local status
+	status=$($command -l $filename |  awk 'BEGIN {status="valid"} (NR == 4 && $NF != "-") || (NR == 6 && ($(NF -1) != "1" || $NF != "file")) {status="invalid"} END {print status}')
+	[[ "${status}" == "invalid" ]]
+	return $?
+}
+
 
 filename=${1-}
 [[ "" = "$filename" ]] && ErrorExit "No filename given" 3
 
+checkfile $filename && ErrorExit "file $filename will not be processed (wrong format)" 9
+
 defaultextract=false
-extensions=(.gz .z -gz -z _z)
+extensions=(.zip)
 
 for ext in "${extensions[@]}" ; do	
      [[ ${filename} == *$ext ]] && {
+     	defaultextract=true
+	break
+     }
+     [[ -f $filename${ext} ]] && {
      	defaultextract=true
 	break
      }
@@ -21,8 +46,8 @@ done
 
 [[ $defaultextract ==  true ]] && {
 	newname=$(echo $filename | sed -e "s/${ext}$//")
-	echo "$myname: File uncompressed new name is $newname"
-	$command $filename
+	echo "$0: File uncompressed new name is $newname"
+	$command -o -qq $filename
 	exit $?
 }
 
@@ -35,7 +60,7 @@ trap "rm -f $outname" 1 2 3 15
 }
 
 
-$command -c < $filename > $outname
+$command -o -qq -p  $filename | cat - > $outname
 status=$?
 [[ $status !=  0 ]] && ErrorExit "$command failed" $status
 

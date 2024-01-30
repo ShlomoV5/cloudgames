@@ -14,5 +14,5 @@ a tool that gets a list of files and or directories and uncompresses the files a
 #### compress
 #### gunzip
 #### unzip
-###### Note in this version a compressed file will always contain a single compressed file and the decompression is only one level deep
+###### Note in this version a compressed file will always contain a single compressed file and the decompression is only one level deep  i.e. if the compressed file is a tar archive the archive will not be opened
 
