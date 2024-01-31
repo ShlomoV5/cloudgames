@@ -1,0 +1,11 @@
+# 
+# compressionInfo file
+# file command output string:command
+# Format search string extracted from using the command file -i -b command
+# command to run for uncompression
+# the command is bash script found in the scripts directory only
+#
+application/x-bzip2:bzip2
+application/x-compress:compress
+application/gzip:gzip
+application/zip:zip

@@ -1,0 +1,48 @@
+#!/bin/bash 
+
+myname=scripts/$(basename $0)
+mydir=$(cd $(dirname $0);pwd)
+command=uncompress.real
+
+source $mydir/../include/misc.sh
+
+filename=${1-}
+[[ "" = "$filename" ]] && ErrorExit "No filename given" 3
+
+defaultextract=false
+extensions=(.Z)
+
+for ext in "${extensions[@]}" ; do	
+     [[ ${filename} == *$ext ]] && {
+     	defaultextract=true
+	break
+     }
+done
+
+[[ $defaultextract ==  true ]] && {
+	newname=$(echo $filename | sed -e "s/${ext}$//")
+	$command $filename
+	exit $?
+}
+
+outname=${filename}.out.$$
+trap "rm -f $outname" 1 2 3 15
+
+[[ -f $outname ]] && {
+	rm -f $outname
+	[[ $? != 0 ]] && ErrorExit "Cannot remove file $outname (tmpfile)" 4
+}
+
+
+$command < $filename  > $outname
+status=$?
+
+[[ $status !=  0 ]] && ErrorExit "$command failed" $status
+
+mv $outname $filename
+status=$?
+[[ $status != 0 ]] && ErrorExit "moving $outname to $filename failed" $status
+
+exit 0
+
+
