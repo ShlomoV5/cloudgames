@@ -1,0 +1,55 @@
+
++ ./extract /tmp/mytest /tmp/others/this.Z
+Loading misc.sh ...
+Loading compressHandler.sh ...
+Files decompressed: 4
+Files not proccesed: 3
+Total directories traversed: 1
+
++ ./extract -r /tmp/mytest2 /tmp/others/this.Z
+Loading misc.sh ...
+Loading compressHandler.sh ...
+Files decompressed: 8
+Files not proccesed: 5
+Total directories traversed: 2
+
++ ./extract -v /tmp/mytest3 /tmp/others/bzipeed /tmp/others/comppass /tmp/others/gzip.pass /tmp/others/this.Z
+Loading misc.sh ...
+Loading compressHandler.sh ...
+/tmp/mytest3/gzpasswd decompressed
+/tmp/mytest3/comp.pass decompressed
+Warning /tmp/mytest3/samplefile no action taken
+/tmp/mytest3/bz2.passwd decompressed
+Warning /tmp/mytest3/not_a_zip.zip no action taken
+/tmp/mytest3/zip_passwd decompressed
+/tmp/others/bzipeed decompressed
+/tmp/others/comppass decompressed
+/tmp/others/gzip.pass decompressed
+Warning /tmp/others/this.Z no action taken
+Files decompressed: 7
+Files not proccesed: 3
+Total directories traversed: 1
+
+
++ ./extract -r -v /tmp/mytest4 /tmp/others/bzipeed /tmp/others/comppass /tmp/others/gzip.pass /tmp/others/this.Z
+Loading misc.sh ...
+Loading compressHandler.sh ...
+/tmp/mytest4/gzpasswd decompressed
+/tmp/mytest4/comp.pass decompressed
+Warning /tmp/mytest4/samplefile no action taken
+/tmp/mytest4/bz2.passwd decompressed
+Warning /tmp/mytest4/not_a_zip.zip no action taken
+/tmp/mytest4/zip_passwd decompressed
+Warning /tmp/others/bzipeed no action taken
+Warning /tmp/others/comppass no action taken
+Warning /tmp/others/gzip.pass no action taken
+Warning /tmp/others/this.Z no action taken
+/tmp/mytest4/subdir/gzpasswd decompressed
+/tmp/mytest4/subdir/comp.pass decompressed
+Warning /tmp/mytest4/subdir/regfile no action taken
+/tmp/mytest4/subdir/bz2.passwd decompressed
+Warning /tmp/mytest4/subdir/not_gz.gz no action taken
+/tmp/mytest4/subdir/zip_passwd decompressed
+Files decompressed: 8
+Files not proccesed: 8
+Total directories traversed: 2

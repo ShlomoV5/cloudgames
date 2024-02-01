@@ -1,0 +1,116 @@
+def payloadlib;
+def parser;
+def lib;
+
+def envInfo=[:];
+doDelete = false
+pipeline {
+
+     agent {
+        node {
+            label 'DSE_NODE'
+        }
+    }
+
+    environment {
+        def packagingDir = "${env.WORKSPACE}/packaging"
+    }
+    stages{
+        stage ("Load payload functions") {
+            steps {
+                script {
+                    payloadlib = load("${env.WORKSPACE}/vars/payloadlib.groovy")
+                    parser = payloadlib.getObj()
+                    lib = load("${env.WORKSPACE}/vars/lib.groovy")
+                }
+            }
+        }
+        stage ("Cleanup First") {
+            steps {
+                cleanWs()
+            }
+        }
+        stage ("Payload Parsing and Environment Setting") {
+            steps{
+                script {
+                    def manager   = currentBuild.rawBuild
+                    def printer   = manager.listener.logger
+                    envInfo       = parser.prepareEnv(payload, printer)
+                    def validInfo = true
+                    println "Environment from Payload ..."
+                    envInfo.each {k, v ->
+                        env."$k" = v
+                        println "${k}=${v}"
+                        if (v == "") {
+                            validInfo = false
+                        }
+                    }
+                    if (!validInfo) {
+                        println "Info received from payload in invalid note if all entries are empty this was an non-actionable payload"
+                        sh "exit 1"
+                    }
+                }
+            }
+        }
+        stage ("Prepare Packaging Environment") {
+            steps {
+                    script {
+                        println "Starting checkout of ${env.PR_BRANCH}..."
+                        lib.checkoutBranch(env.PR_REPOURL, env.PR_BRANCH)
+                        println "Finished ${env.PR_BRANCH} checkout"
+                    }
+                
+            }
+        }
+        stage("Package Creation Using Tar") {
+            steps{
+                dir(env.packagingDir) {
+                    script {
+                        def branch_name =  env.PR_BRANCH.replaceAll("/","_") + "_" + env.BUILD_NUMBER
+                       
+                        def package_name = "package_${env.PR_USER}_${branch_name}.tgz"
+
+                        def shell_command="tar --exclude=./.git --exclude=./${package_name} -czvf ${env.WORKSPACE}/${package_name} ."
+                        
+                        println "Creating package - ${package_name} .... "
+                        def status = sh script: shell_command, returnStatus:true
+                        sh "exit ${status}"  // Quick exit if failed here
+                        env.PACKAGE_NAME=package_name
+                    }
+
+                }
+            }       
+        }
+        stage("Uploading Package to Repo") {
+            steps {
+                dir(env.packagingDir) {
+                    script {
+                        def gitremote = sh script: "git remote" , returnStdout: true
+                        gitremote=gitremote.replaceAll("\n","")
+                        println "Git remote is: ${gitremote}"
+                        def commands = [    "mv ${env.WORKSPACE}/${env.PACKAGE_NAME} .",
+                                            "git add ${env.PACKAGE_NAME}",
+                                            "git config user.name ${env.PR_USER}",
+                                            "git config user.email ${env.PR_USER}@dummy.com",
+                                            "git commit -n --no-edit -m \"Adding package ${env.PACKAGE_NAME}\"",
+                                            "git push ${gitremote} ${env.PR_BRANCH}"
+                                       ]       
+                        commands.each {command -> 
+                            status = sh script:command, returnStatus:true
+                            sh script:"exit $status"
+                        }        
+                    }
+                }
+            }
+        }
+
+
+        stage("Cleanup Post") {
+            steps {
+                script {
+                    cleanWs()
+                    } // script
+            } // steps
+        } // Cleanup Post
+    } // stages
+} // pipeline
