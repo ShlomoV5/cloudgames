@@ -24,7 +24,7 @@ a tool that is triggered from GitHub when there were changes to a PR in repo
 ## File structure includes
 ###### pipelines - packaging Job 
 ###### jsl - packaging Job using JSL
-###### screenshots
+###### snapshots - contains configuration and output from Jenkins captured from a build session
 ###### src - framework for JSL
 ###### vars - lib.groovy (general functions), payloadlib.groovy (payload parser)
 ##### Note this version was tested using a classic Pipeline deployment without JSL 
