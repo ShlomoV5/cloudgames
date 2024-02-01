@@ -54,32 +54,30 @@ pipeline {
         }
         stage ("Prepare Packaging Environment") {
             steps {
+                dir(env.packagingDir) {
                     script {
                         println "Starting checkout of ${env.PR_BRANCH}..."
                         lib.checkoutBranch(env.PR_REPOURL, env.PR_BRANCH)
                         println "Finished ${env.PR_BRANCH} checkout"
                     }
-                
-            }
+                }
+             }
         }
         stage("Package Creation Using Tar") {
             steps{
-                dir(env.packagingDir) {
+                dir (env.packagingDir) {
                     script {
                         def branch_name =  env.PR_BRANCH.replaceAll("/","_") + "_" + env.BUILD_NUMBER
-                       
                         def package_name = "package_${env.PR_USER}_${branch_name}.tgz"
-
                         def shell_command="tar --exclude=./.git --exclude=./${package_name} -czvf ${env.WORKSPACE}/${package_name} ."
-                        
                         println "Creating package - ${package_name} .... "
                         def status = sh script: shell_command, returnStatus:true
                         sh "exit ${status}"  // Quick exit if failed here
                         env.PACKAGE_NAME=package_name
                     }
-
                 }
-            }       
+
+            }
         }
         stage("Uploading Package to Repo") {
             steps {
