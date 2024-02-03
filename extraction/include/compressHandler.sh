@@ -42,13 +42,22 @@ proccessFile() {
 	local pstatus=0
 	local filename=$1
 	local vmesg="Warning ${filename} no action taken"
-
+$homedir/scripts/$command
 	command=$(getDecompressCommand $filename)
 
 	[[ -z "$command" ]] && {
 			   noCompCnt=$(( $noCompCnt + 1 ))
+      			   echo "$filename has no corresponding command" 1>&2
+	    		   vinfo $vmesg
 	} || {
-		$homedir/scripts/$command $filename
+ 		[[ "$command" =~  '/' ]] && runcommand=$command || runcommand=$homedir/scripts/$command
+   		[[ ! -x $command ]] && {
+     			echo "proccessFile - command $command not found" 1>&2
+			noCompCnt=$(( $noCompCnt + 1 ))
+    			vinfo $vmesg
+   			return 12
+      		}
+		$runcommand $filename
 		pstatus=$?
 		case $pstatus in
 			0) 
@@ -60,7 +69,7 @@ proccessFile() {
 			;;
 		esac
 	} 
-    vinfo $vmesg
+        vinfo $vmesg
 	return $pstatus
 }
 
@@ -81,5 +90,5 @@ processDirList() {
 printTotals() {
 	echo "Files decompressed: $decompCnt"
 	echo "Files not proccesed: $noCompCnt"
-	echo "Total directories traversed: $dirCount"
+	vinfo "Total directories traversed: $dirCount"
 }
