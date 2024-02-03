@@ -39,23 +39,30 @@ traverseDir() {
 
 
 proccessFile() {
+	local runcommand
 	local pstatus=0
+	local cmdnotfoundstatus=12
 	local filename=$1
 	local vmesg="Warning ${filename} no action taken"
-$homedir/scripts/$command
+
 	command=$(getDecompressCommand $filename)
 
 	[[ -z "$command" ]] && {
 			   noCompCnt=$(( $noCompCnt + 1 ))
       			   echo "$filename has no corresponding command" 1>&2
 	    		   vinfo $vmesg
+			   return  $pstatus
 	} || {
- 		[[ "$command" =~  '/' ]] && runcommand=$command || runcommand=$homedir/scripts/$command
-   		[[ ! -x $command ]] && {
+ 		[[ "$command" =~  '/' ]] &&  {
+			runcommand=$command
+		} || {
+			runcommand=$homedir/scripts/$command
+		}
+   		[[ ! -x $runcommand ]] && {
      			echo "proccessFile - command $command not found" 1>&2
 			noCompCnt=$(( $noCompCnt + 1 ))
     			vinfo $vmesg
-   			return 12
+   			return $cmdnotfoundstatus
       		}
 		$runcommand $filename
 		pstatus=$?
