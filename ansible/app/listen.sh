@@ -1,7 +1,6 @@
-#!/bin/bash -x
+#!/bin/bash
 mydir=$(cd $(dirname $0);pwd)
-echo "$(date) Starting listening process ....."
-while : ; do
-nc -l -p 80 
-done | python3 $mydir/update.py
-echo "$(date) Process ended."
+logfile=/var/log/nginx/access.log
+echo "Starting listening process ... (reading from $logfile)"
+tail -n 1 -f $logfile | python3 $mydir/listen.py
+echo "Finished listening process"

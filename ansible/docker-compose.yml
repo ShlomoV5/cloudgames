@@ -7,7 +7,7 @@ services:
       - "80:80"
     volumes:
       - ./html:/usr/share/nginx/html
-
+      - ./logs/nginx:/var/log/nginx
   db:
     image: postgres:13.4-alpine
     environment: 
@@ -22,9 +22,12 @@ services:
     ports:
     - 5432:5432
 
-  test_service:
-    image: ansible1:latest
+  listener:
+    build:
+      context: .
     command: bash /app/listen.sh
+    volumes:
+     - ./logs/nginx:/var/log/nginx
     depends_on:
       - web_server
       - db

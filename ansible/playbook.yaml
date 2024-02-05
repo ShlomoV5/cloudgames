@@ -16,12 +16,12 @@
         name: docker
         state: started
 
-    - name: Copy Docker Compose file to the server
+    - name: Copy all content needed to server
       copy:
-        src: docker-compose.yml
-        dest: /opt/docker-compose/docker-compose.yml
+        src: ./
+        dest: /opt/docker-compose/
 
     - name: Ensure docker-compose up
-      command: docker-compose up -d
+      command: docker-compose up -d listener
       args:
         chdir: /opt/docker-compose
