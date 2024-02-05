@@ -29,4 +29,18 @@ a tool that is triggered from GitHub when there were changes to a PR in repo
 ###### vars - lib.groovy (general functions), payloadlib.groovy (payload parser)
 ##### Note this version was tested using a classic Pipeline deployment without JSL 
 ######  Default considerations **git** and the JSL are setup correctly
-
+## Tool 3
+### Ansible playbook for deployment web app and monitor
+###### Written with Dockerfile, docker-compose.yml playbook.yaml python and bash for the listener container
+## Components
+###### Simple web service container based on nginx
+###### postgres container as the stateful data collector
+###### listener container that monitors the hits on the web server
+## File structure includes
+###### app - contains the code for the listener container
+###### html - contains the index.html page for the web server container
+###### logs - (created by docker compose)  has the log files of web server container
+## Files
+###### Dockerfile - builds the listener container include all python libraries needed
+###### docker-compose.yml - describes and deploys the product
+###### playbook.yaml - for deploying product using ansible
