@@ -1,0 +1,27 @@
+---
+- name: Deploy Docker Compose Application
+  hosts: your_servers
+  become: true
+  tasks:
+    - name: Install Docker and Docker Compose
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - docker.io
+        - docker-compose
+
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+
+    - name: Copy all content needed to server
+      copy:
+        src: ./
+        dest: /opt/docker-compose/
+
+    - name: Ensure docker-compose up
+      command: docker-compose up -d listener
+      args:
+        chdir: /opt/docker-compose

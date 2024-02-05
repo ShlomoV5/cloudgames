@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  web_server:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/usr/share/nginx/html
+      - ./logs/nginx:/var/log/nginx
+  db:
+    image: postgres:13.4-alpine
+    environment: 
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: hit_counter
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    ports:
+    - 5432:5432
+
+  listener:
+    build:
+      context: .
+    command: bash /app/listen.sh
+    volumes:
+     - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - web_server
+      - db
+   
+
+ 

@@ -1,9 +1,9 @@
 # 
 # compressionInfo file
 # relevant lines have the format of
-# String:Command
-# Where string is the output extracted from the command line: file -i -b filename
-# Command is what to execute to decompress filename
+# fileString:Command
+# Where fileString is the output extracted from the command line: file -i -b filename
+# Command is what to execute to decompress the processed file
 # commands that don't have a '/' in the name are bash scripts found in the scripts directory only
 #
 application/x-bzip2:bzip2
