@@ -1,6 +1,6 @@
 ---
 - name: Deploy Docker Compose Application
-  hosts: your_servers
+  hosts: serverlist
   become: true
   tasks:
     - name: Install Docker and Docker Compose
