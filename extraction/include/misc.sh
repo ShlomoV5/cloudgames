@@ -16,14 +16,6 @@ ErrorExit() {
 	exit  "$exitcode"
 	
 }
-show_help() {
-	echo  "Syntax: ${myname} [-h] [-v] [-r] file [file ...]" 1>&2
-	echo " -v - verbose echo each file decompressed and warn for each file that was not decompressed" 1>&2
-	echo " -r - recursive - will traverse contents of folders recursively, performing unpack on each" 1>&2
-	echo "    Note: otherwise when given a directory it will only act on files in the directory" 1>&2
-	echo " -h - help will print this message" 1>&2
-}
-
 vinfo() {
 	[[ $verbose -eq 1 ]] && {
 		message=$@
