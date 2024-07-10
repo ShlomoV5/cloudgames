@@ -6,7 +6,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    netcat \
+    netcat-traditional \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 RUN apt-get update \
@@ -15,8 +15,8 @@ RUN apt-get update \
     python3-pip \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --trusted-host pypi.python.org psycopg2-binary
-RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --trusted-host pypi.python.org scapy libpcap
+RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --trusted-host pypi.python.org psycopg2-binary --break-system-packages
+RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --trusted-host pypi.python.org scapy libpcap --break-system-packages
 RUN ln -s /usr/local/opt/libpcap/lib/libpcap.a /usr/local/lib/libpcap.a
 RUN ln -s /usr/local/opt/libpcap/lib/libpcap.dylib /usr/local/lib/libpcap.dylib
 RUN mkdir -p /var/log/nginx
